@@ -3,9 +3,6 @@
 > **Financial Freedom, Reimagined.**
 > Experience the future of personal capital management with FinTracker. Smart tracking, custom paycheck cycles, and premium analytics designed for the modern earner.
 
-<img src="./FinTracker-Frontend/src/assets/fintracker.png" width="100" />
-Live Link: https://rupeekfinances.vercel.app 
-
 ## 🌟 Overview
 
 **FinTracker** is a comprehensive personal finance application designed to help users take control of their financial life. Built with modern web technologies, it offers a seamless, secure, and aesthetically pleasing interface for tracking income, expenses, and wealth growing over time.
