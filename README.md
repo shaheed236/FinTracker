@@ -1,9 +1,8 @@
-# FinTracker - AI-Powered Personal Finance System🚀
+# FinTracker - AI-Powered Personal Finance Workspace 🚀
 ---
-> **Financial Freedom, Simplified.**
-> Experience the future of personal finance with FinTracker. Smart tracking, custom salary cycles, and premium analytics designed for the modern earner.
+> **Financial Freedom, Reimagined.**
+> Experience the future of personal capital management with FinTracker. Smart tracking, custom paycheck cycles, and premium analytics designed for the modern earner.
 
-<img src="./FinTracker-Frontend/src/assets/fintracker.png" width="100" />
 Live Link: https://rupeekfinances.vercel.app 
 
 ## 🌟 Overview
@@ -51,7 +50,7 @@ Live Link: https://rupeekfinances.vercel.app
 -   **Modern Design**: Built with **Tailwind CSS** using a custom "Outfit" font family.
 -   **Dark/Light Mode**: Fully theme-aware interface with a persistent toggle.
 -   **Glassmorphism**: Trendy, frosted-glass effects on Cards, Modals, and Navbar.
--   **Responsive Layout**: Optimized for Desktop, Tablet, and Mobile devices.
+-   **Responsive Layout**: Collapsible sidebar navigation, floating headers, and desktop/tablet/mobile optimizations.
 -   **Animations**: Engaging **Lottie animations** and smooth CSS transitions.
 
 ## 🛠️ Tech Stack

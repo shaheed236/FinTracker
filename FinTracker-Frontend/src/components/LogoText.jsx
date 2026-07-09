@@ -1,10 +1,11 @@
+import React from 'react';
+
 export default function LogoText({ className = "" }) {
     return (
-        <span className={`font-bold text-blue-600 ${className}`}>
-            Fin
-            <span className="inline-block text-[#ffb700] animate-swapRight">T</span>
-            <span className="inline-block text-[#ffb700] animate-swapLeft">r</span>
-            <span className="text-[#ffb700]">acker</span>
+        <span className={`font-extrabold tracking-tight text-foreground ${className}`}>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500">
+                FinTracker
+            </span>
         </span>
     );
 }

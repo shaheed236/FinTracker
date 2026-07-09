@@ -5,7 +5,7 @@ import { doc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/fires
 import { db } from '../firebase/config';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { Wallet, CheckCircle2 } from 'lucide-react';
+import { Wallet, CheckCircle2, ChevronRight, User, DollarSign, Calendar } from 'lucide-react';
 
 export default function Onboarding() {
     const { currentUser, userProfile } = useAuth();
@@ -69,138 +69,159 @@ export default function Onboarding() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-            <div className="w-full max-w-lg space-y-8 bg-card p-8 rounded-xl border border-border shadow-lg">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 select-none relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 via-transparent to-cyan-500/5 -z-10" />
+
+            <div className="w-full max-w-lg space-y-6 glass-panel p-8 md:p-10 rounded-3xl border border-border/40 shadow-2xl relative overflow-hidden">
                 <div className="flex flex-col items-center text-center">
-                    <div className="bg-primary p-3 rounded-xl mb-4">
-                        <Wallet className="w-8 h-8 text-primary-foreground" />
+                    <div className="bg-primary/10 p-3.5 rounded-2xl mb-4 border border-primary/20">
+                        <Wallet className="w-7 h-7 text-primary" />
                     </div>
-                    <h2 className="text-2xl font-bold tracking-tight">Let's set up your profile</h2>
-                    <p className="text-muted-foreground mt-2">
-                        Help us personalize your financial tracking experience
+                    <h2 className="text-2xl font-extrabold tracking-tight text-foreground">Welcome to FinTracker</h2>
+                    <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+                        Configure your base financial parameters to start mapping your capital growth.
                     </p>
                 </div>
 
-                <div className="flex justify-center gap-2 mb-8">
+                {/* Progress Indicators */}
+                <div className="flex justify-center gap-2.5 mb-8">
                     {[1, 2, 3, 4].map((i) => (
                         <div
                             key={i}
-                            className={`h-2 flex-1 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-muted'
-                                }`}
+                            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+                                step >= i 
+                                    ? 'bg-gradient-to-r from-primary to-secondary' 
+                                    : 'bg-muted'
+                            }`}
                         />
                     ))}
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Step 1: User Name */}
                     {step === 1 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
+                        <div className="space-y-4 animate-in fade-in duration-300">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">What should we call you?</label>
+                                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                                    <User className="w-3.5 h-3.5" /> What should we call you?
+                                </label>
                                 <Input
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Enter your full name"
+                                    placeholder="Enter your name"
                                     autoFocus
+                                    className="h-11"
                                 />
                             </div>
-                            <Button type="button" className="w-full" onClick={() => setStep(2)} disabled={!formData.name}>
-                                Continue
+                            <Button type="button" className="w-full h-11 text-xs gap-1" onClick={() => setStep(2)} disabled={!formData.name}>
+                                Continue <ChevronRight className="w-4 h-4" />
                             </Button>
                         </div>
                     )}
 
+                    {/* Step 2: Currency */}
                     {step === 2 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
+                        <div className="space-y-4 animate-in fade-in duration-300">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Select your currency</label>
+                                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                                    <DollarSign className="w-3.5 h-3.5" /> Select your operating currency
+                                </label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {currencies.map((curr) => (
                                         <button
                                             key={curr.value}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, currency: curr.value })}
-                                            className={`flex items-center justify-between p-4 rounded-lg border transition-all ${formData.currency === curr.value
-                                                ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                                                : 'border-input hover:border-primary/50'
-                                                }`}
+                                            className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                                                formData.currency === curr.value
+                                                    ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary'
+                                                    : 'border-border/60 hover:border-primary/40 bg-muted/10'
+                                            }`}
                                         >
-                                            <span className="font-medium">{curr.label}</span>
+                                            <span className="text-xs font-bold">{curr.label}</span>
                                             {formData.currency === curr.value && (
-                                                <CheckCircle2 className="w-4 h-4 text-primary" />
+                                                <CheckCircle2 className="w-4.5 h-4.5 text-primary shrink-0" />
                                             )}
                                         </button>
                                     ))}
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
+                                <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 h-11 text-xs">
                                     Back
                                 </Button>
-                                <Button type="button" onClick={() => setStep(3)} className="flex-1">
-                                    Continue
+                                <Button type="button" onClick={() => setStep(3)} className="flex-1 h-11 text-xs gap-1">
+                                    Continue <ChevronRight className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
                     )}
 
+                    {/* Step 3: Paycheck Cycle start date */}
                     {step === 3 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
+                        <div className="space-y-4 animate-in fade-in duration-300">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">When do you receive your salary?</label>
-                                <div className="space-y-1">
+                                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                                    <Calendar className="w-3.5 h-3.5" /> When do you receive your salary?
+                                </label>
+                                <div className="space-y-2">
                                     <Input
                                         required
                                         type="number"
                                         min="1"
                                         max="31"
                                         value={formData.salaryDate}
-                                        onChange={(e) => setFormData({ ...formData, salaryDate: parseInt(e.target.value) })}
+                                        onChange={(e) => setFormData({ ...formData, salaryDate: Math.max(1, Math.min(31, parseInt(e.target.value) || 1)) })}
                                         placeholder="1"
+                                        className="h-11"
                                     />
-                                    <p className="text-xs text-muted-foreground">
-                                        We'll use this date to start your monthly budget cycle.
+                                    <p className="text-[10px] text-muted-foreground leading-normal">
+                                        Your monthly balance calculation cycle will boundaries around this date (e.g., 25th of one month to 24th of the next).
                                     </p>
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1">
+                                <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1 h-11 text-xs">
                                     Back
                                 </Button>
-                                <Button type="button" onClick={() => setStep(4)} className="flex-1">
-                                    Continue
+                                <Button type="button" onClick={() => setStep(4)} className="flex-1 h-11 text-xs gap-1">
+                                    Continue <ChevronRight className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
                     )}
 
+                    {/* Step 4: Paycheck Income */}
                     {step === 4 && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-8">
+                        <div className="space-y-4 animate-in fade-in duration-300">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">What is your monthly income?</label>
+                                <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                                    <DollarSign className="w-3.5 h-3.5" /> What is your monthly income?
+                                </label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-2.5 text-muted-foreground">
+                                    <span className="absolute left-3.5 top-3.5 text-muted-foreground text-sm font-bold">
                                         {formData.currency}
                                     </span>
                                     <Input
                                         required
                                         type="number"
-                                        className="pl-8"
+                                        className="pl-8 h-12 text-base font-bold"
                                         value={formData.monthlyIncome}
                                         onChange={(e) => setFormData({ ...formData, monthlyIncome: e.target.value })}
                                         placeholder="0.00"
                                         autoFocus
                                     />
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    This helps us calculate your savings and budget.
+                                <p className="text-[10px] text-muted-foreground leading-normal">
+                                    This amount is registered as your primary monthly cycle income, forming the threshold of your savings calculations.
                                 </p>
                             </div>
                             <div className="flex gap-3">
-                                <Button type="button" variant="outline" onClick={() => setStep(3)} className="flex-1">
+                                <Button type="button" variant="outline" onClick={() => setStep(3)} className="flex-1 h-11 text-xs">
                                     Back
                                 </Button>
-                                <Button type="submit" disabled={loading || !formData.monthlyIncome} className="flex-1">
+                                <Button type="submit" disabled={loading || !formData.monthlyIncome} className="flex-1 h-11 text-xs font-semibold">
                                     {loading ? 'Setting up...' : 'Complete Setup'}
                                 </Button>
                             </div>

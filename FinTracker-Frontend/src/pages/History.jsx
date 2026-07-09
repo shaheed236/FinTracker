@@ -1,18 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
-import { format, subMonths, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
-import { Calendar as CalendarIcon, ArrowDownLeft, ArrowUpRight, Search, Download, Pencil, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { format, isSameMonth } from 'date-fns';
+import { Calendar as CalendarIcon, ArrowDownLeft, ArrowUpRight, Search, Download, Pencil, Trash2, SlidersHorizontal } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import AddTransactionModal from '../components/AddTransactionModal';
 
 export default function History() {
     const { transactions, loading, deleteTransaction, updateTransaction, addTransaction } = useTransactions();
+    const { userProfile } = useAuth();
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
+
+    const currencySymbol = userProfile?.currency || '₹';
 
     const handleEdit = (transaction) => {
         setEditingTransaction(transaction);
@@ -48,8 +52,9 @@ export default function History() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center min-h-[70vh] gap-4">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                <p className="text-xs text-muted-foreground animate-pulse">Loading transaction logs...</p>
             </div>
         );
     }
@@ -72,7 +77,7 @@ export default function History() {
         if (link.download !== undefined) {
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `transactions_${selectedMonth}.csv`);
+            link.setAttribute('download', `FinTracker_transactions_${selectedMonth}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -81,132 +86,149 @@ export default function History() {
     };
 
     return (
-        <div className="p-4 md:p-8 space-y-6 animate-in fade-in slide-in-from-bottom-4">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 pb-16">
+            
+            {/* Header controls section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">History</h1>
-                    <p className="text-muted-foreground mt-1">
-                        View your transaction history by month
+                    <h1 className="text-3xl font-extrabold tracking-tight">Ledger Logs</h1>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                        Browse, filter and export your transaction history
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={handleExport} className="gap-2">
+                <div className="flex flex-wrap items-center gap-3">
+                    <Button variant="outline" onClick={handleExport} className="gap-2 h-10 text-xs rounded-xl border-border/60 hover:bg-muted/40">
                         <Download className="w-4 h-4" />
-                        <span className="hidden sm:inline">Export</span>
+                        <span>Export CSV</span>
                     </Button>
                     <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <CalendarIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <input
                             type="month"
                             value={selectedMonth}
                             onChange={(e) => setSelectedMonth(e.target.value)}
-                            className="flex h-9 w-full rounded-md border border-input bg-background pl-9 pr-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                            className="flex h-10 rounded-xl border border-border/80 bg-background/35 pl-9 pr-4 py-2 text-xs shadow-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer text-foreground"
                         />
                     </div>
                 </div>
             </div>
 
+            {/* Income/Expense summary badges cards */}
             <div className="grid gap-4 md:grid-cols-2">
-                <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center justify-between">
+                <div className="bg-card p-5 rounded-2xl border border-border/40 shadow-sm flex items-center justify-between transition-all hover:border-emerald-500/20">
                     <div>
-                        <p className="text-sm font-medium text-muted-foreground">Monthly Income</p>
-                        <h3 className="text-2xl font-bold text-green-600 dark:text-green-400">
-                            +₹{stats.income.toLocaleString()}
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Income (Selected Month)</p>
+                        <h3 className="text-2xl font-extrabold text-emerald-500 mt-1">
+                            +{currencySymbol}{stats.income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </h3>
                     </div>
-                    <div className="bg-green-100 p-2 rounded-full dark:bg-green-900/30">
-                        <ArrowDownLeft className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <div className="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-500 shrink-0">
+                        <ArrowDownLeft className="w-5 h-5" />
                     </div>
                 </div>
-                <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center justify-between">
+
+                <div className="bg-card p-5 rounded-2xl border border-border/40 shadow-sm flex items-center justify-between transition-all hover:border-red-500/20">
                     <div>
-                        <p className="text-sm font-medium text-muted-foreground">Monthly Expense</p>
-                        <h3 className="text-2xl font-bold text-red-600 dark:text-red-400">
-                            -₹{stats.expense.toLocaleString()}
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Expenses (Selected Month)</p>
+                        <h3 className="text-2xl font-extrabold text-red-500 mt-1">
+                            -{currencySymbol}{stats.expense.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </h3>
                     </div>
-                    <div className="bg-red-100 p-2 rounded-full dark:bg-red-900/30">
-                        <ArrowUpRight className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <div className="bg-red-500/10 p-3 rounded-xl border border-red-500/20 text-red-500 shrink-0">
+                        <ArrowUpRight className="w-5 h-5" />
                     </div>
                 </div>
             </div>
 
-            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-border flex gap-2">
+            {/* Logs controller filter card */}
+            <div className="bg-card rounded-2xl border border-border/40 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-border/40 flex flex-col sm:flex-row gap-3 bg-muted/20">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3.5 top-3 w-4 h-4 text-muted-foreground" />
                         <Input
-                            placeholder="Search transactions..."
+                            placeholder="Search category, notes..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-9"
+                            className="pl-9 h-10 text-xs"
                         />
                     </div>
-                    <select
-                        value={filterType}
-                        onChange={(e) => setFilterType(e.target.value)}
-                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                    >
-                        <option value="all">All Types</option>
-                        <option value="income">Income</option>
-                        <option value="expense">Expense</option>
-                    </select>
+                    
+                    <div className="flex gap-2">
+                        <div className="relative flex items-center">
+                            <SlidersHorizontal className="absolute left-3 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                            <select
+                                value={filterType}
+                                onChange={(e) => setFilterType(e.target.value)}
+                                className="h-10 pl-9 pr-8 rounded-xl border border-border/80 bg-background/35 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground cursor-pointer appearance-none min-w-[120px]"
+                            >
+                                <option value="all">All Logs</option>
+                                <option value="income">Incomes</option>
+                                <option value="expense">Expenses</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 {filteredTransactions.length === 0 ? (
-                    <div className="p-8 text-center text-muted-foreground">
-                        No transactions found for this month.
+                    <div className="p-16 text-center text-muted-foreground text-xs leading-normal">
+                        No transactions registered matching the active filters.
                     </div>
                 ) : (
-                    <div className="divide-y divide-border">
+                    <div className="divide-y divide-border/30">
                         {filteredTransactions.map((transaction) => (
-                            <div key={transaction.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-2 rounded-full ${transaction.type === 'income'
-                                        ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
-                                        : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                                        }`}>
-                                        {transaction.type === 'income' ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
+                            <div key={transaction.id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <div className={`p-2.5 rounded-xl shrink-0 ${
+                                        transaction.type === 'income'
+                                            ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                                            : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                                    }`}>
+                                        {transaction.type === 'income' ? <ArrowDownLeft className="w-4.5 h-4.5" /> : <ArrowUpRight className="w-4.5 h-4.5" />}
                                     </div>
-                                    <div>
-                                        <p className="font-medium">{transaction.category}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {format(transaction.date, 'MMM dd')} • {transaction.note || 'No note'}
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">{transaction.category}</p>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                                            {format(transaction.date, 'MMM dd, yyyy')} • <span className="italic">{transaction.note || 'No note attached'}</span>
                                         </p>
                                     </div>
                                 </div>
-                                <div className={`font-semibold ${transaction.type === 'income'
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-red-600 dark:text-red-400'
+
+                                <div className="flex items-center gap-4 shrink-0">
+                                    <div className={`text-sm font-extrabold ${
+                                        transaction.type === 'income'
+                                            ? 'text-emerald-500'
+                                            : 'text-red-500'
                                     }`}>
-                                    {transaction.type === 'income' ? '+' : '-'}₹{parseFloat(transaction.amount).toLocaleString()}
-                                </div>
-                                <div className="flex items-center gap-2 ml-4">
-                                    <button
-                                        onClick={() => handleEdit(transaction)}
-                                        className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors"
-                                        title="Edit"
-                                    >
-                                        <Pencil className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (window.confirm('Are you sure you want to delete this transaction?')) {
-                                                deleteTransaction(transaction.id);
-                                            }
-                                        }}
-                                        className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
-                                        title="Delete"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                                        {transaction.type === 'income' ? '+' : '-'}{currencySymbol}{parseFloat(transaction.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                    </div>
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button
+                                            onClick={() => handleEdit(transaction)}
+                                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                            title="Edit"
+                                        >
+                                            <Pencil className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm('Are you sure you want to delete this transaction?')) {
+                                                    deleteTransaction(transaction.id);
+                                                }
+                                            }}
+                                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+
             <AddTransactionModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
