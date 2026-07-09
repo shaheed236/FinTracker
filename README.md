@@ -3,8 +3,6 @@
 > **Financial Freedom, Simplified.**
 > Experience the future of personal finance with FinTracker. Smart tracking, custom salary cycles, and premium analytics designed for the modern earner.
 
-<img src="./FinTracker-Frontend/src/assets/fintracker.png" width="100" />
-Live Link: https://rupeekfinances.vercel.app 
 
 ## 🌟 Overview
 
