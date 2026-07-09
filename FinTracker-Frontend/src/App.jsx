@@ -1,0 +1,58 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
+import Landing from './pages/Landing';
+
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import Onboarding from './pages/Onboarding';
+import History from './pages/History';
+import Analytics from './pages/Analytics';
+import Profile from './pages/Profile';
+import AIInsights from './pages/AIInsights';
+
+
+function App() {
+  return (
+    <Router>
+      <ThemeProvider>
+        <AuthProvider>
+          <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+
+              <Route element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/ai-insights" element={<AIInsights />} />
+              </Route>
+
+
+              <Route path="/onboarding" element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              } />
+
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </AuthProvider>
+      </ThemeProvider>
+    </Router>
+  );
+}
+
+export default App;
