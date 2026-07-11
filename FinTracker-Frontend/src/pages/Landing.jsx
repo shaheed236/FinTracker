@@ -23,7 +23,7 @@ export default function Landing() {
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.08]">
                         Financial Freedom, <br />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 drop-shadow-sm">Reimagined.</span>
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 drop-shadow-sm">Reimagined.</span>
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto md:mx-0 leading-relaxed font-light">
                         Experience the next generation of personal capital management with <LogoText />. Smart real-time tracking, custom salary cycles, and intelligent AI insights built for creators.
